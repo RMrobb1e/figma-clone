@@ -9,7 +9,7 @@ import {
   CanvasObjectScaling,
   CanvasPathCreated,
   CanvasSelectionCreated,
-  RenderCanvas,
+  RenderCanvas
 } from "@/types/type";
 import { defaultNavElement } from "@/constants";
 import { createSpecificShape } from "./shapes";
@@ -17,7 +17,7 @@ import { createSpecificShape } from "./shapes";
 // initialize fabric canvas
 export const initializeFabric = ({
   fabricRef,
-  canvasRef,
+  canvasRef
 }: {
   fabricRef: React.MutableRefObject<fabric.Canvas | null>;
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
@@ -28,7 +28,7 @@ export const initializeFabric = ({
   // create fabric canvas
   const canvas = new fabric.Canvas(canvasRef.current, {
     width: canvasElement?.clientWidth,
-    height: canvasElement?.clientHeight,
+    height: canvasElement?.clientHeight
   });
 
   // set canvas reference to fabricRef so we can use it later anywhere outside canvas listener
@@ -43,7 +43,7 @@ export const handleCanvasMouseDown = ({
   canvas,
   selectedShapeRef,
   isDrawing,
-  shapeRef,
+  shapeRef
 }: CanvasMouseDown) => {
   // get pointer coordinates
   const pointer = canvas.getPointer(options.e);
@@ -103,13 +103,13 @@ export const handleCanvasMouseDown = ({
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvaseMouseMove = ({
+export const handleCanvasMouseMove = ({
   options,
   canvas,
   isDrawing,
   selectedShapeRef,
   shapeRef,
-  syncShapeInStorage,
+  syncShapeInStorage
 }: CanvasMouseMove) => {
   // if selected shape is freeform, return
   if (!isDrawing.current) return;
@@ -126,34 +126,34 @@ export const handleCanvaseMouseMove = ({
     case "rectangle":
       shapeRef.current?.set({
         width: pointer.x - (shapeRef.current?.left || 0),
-        height: pointer.y - (shapeRef.current?.top || 0),
+        height: pointer.y - (shapeRef.current?.top || 0)
       });
       break;
 
     case "circle":
       shapeRef.current.set({
-        radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
+        radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2
       });
       break;
 
     case "triangle":
       shapeRef.current?.set({
         width: pointer.x - (shapeRef.current?.left || 0),
-        height: pointer.y - (shapeRef.current?.top || 0),
+        height: pointer.y - (shapeRef.current?.top || 0)
       });
       break;
 
     case "line":
       shapeRef.current?.set({
         x2: pointer.x,
-        y2: pointer.y,
+        y2: pointer.y
       });
       break;
 
     case "image":
       shapeRef.current?.set({
         width: pointer.x - (shapeRef.current?.left || 0),
-        height: pointer.y - (shapeRef.current?.top || 0),
+        height: pointer.y - (shapeRef.current?.top || 0)
       });
 
     default:
@@ -178,7 +178,7 @@ export const handleCanvasMouseUp = ({
   activeObjectRef,
   selectedShapeRef,
   syncShapeInStorage,
-  setActiveElement,
+  setActiveElement
 }: CanvasMouseUp) => {
   isDrawing.current = false;
   if (selectedShapeRef.current === "freeform") return;
@@ -202,7 +202,7 @@ export const handleCanvasMouseUp = ({
 // update shape in storage when object is modified
 export const handleCanvasObjectModified = ({
   options,
-  syncShapeInStorage,
+  syncShapeInStorage
 }: CanvasObjectModified) => {
   const target = options.target;
   if (!target) return;
@@ -217,7 +217,7 @@ export const handleCanvasObjectModified = ({
 // update shape in storage when path is created when in freeform mode
 export const handlePathCreated = ({
   options,
-  syncShapeInStorage,
+  syncShapeInStorage
 }: CanvasPathCreated) => {
   // get path object
   const path = options.path;
@@ -225,7 +225,7 @@ export const handlePathCreated = ({
 
   // set unique id to path object
   path.set({
-    objectId: uuid4(),
+    objectId: uuid4()
   });
 
   // sync shape in storage
@@ -234,7 +234,7 @@ export const handlePathCreated = ({
 
 // check how object is moving on canvas and restrict it to canvas boundaries
 export const handleCanvasObjectMoving = ({
-  options,
+  options
 }: {
   options: fabric.IEvent;
 }) => {
@@ -274,7 +274,7 @@ export const handleCanvasObjectMoving = ({
 export const handleCanvasSelectionCreated = ({
   options,
   isEditingRef,
-  setElementAttributes,
+  setElementAttributes
 }: CanvasSelectionCreated) => {
   // if user is editing manually, return
   if (isEditingRef.current) return;
@@ -306,7 +306,7 @@ export const handleCanvasSelectionCreated = ({
       // @ts-ignore
       fontFamily: selectedElement?.fontFamily || "",
       // @ts-ignore
-      fontWeight: selectedElement?.fontWeight || "",
+      fontWeight: selectedElement?.fontWeight || ""
     });
   }
 };
@@ -314,7 +314,7 @@ export const handleCanvasSelectionCreated = ({
 // update element attributes when element is scaled
 export const handleCanvasObjectScaling = ({
   options,
-  setElementAttributes,
+  setElementAttributes
 }: CanvasObjectScaling) => {
   const selectedElement = options.target;
 
@@ -330,7 +330,7 @@ export const handleCanvasObjectScaling = ({
   setElementAttributes((prev) => ({
     ...prev,
     width: scaledWidth?.toFixed(0).toString() || "",
-    height: scaledHeight?.toFixed(0).toString() || "",
+    height: scaledHeight?.toFixed(0).toString() || ""
   }));
 };
 
@@ -338,7 +338,7 @@ export const handleCanvasObjectScaling = ({
 export const renderCanvas = ({
   fabricRef,
   canvasObjects,
-  activeObjectRef,
+  activeObjectRef
 }: RenderCanvas) => {
   // clear canvas
   fabricRef.current?.clear();
@@ -390,14 +390,14 @@ export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
 
   canvas.setDimensions({
     width: canvasElement.clientWidth,
-    height: canvasElement.clientHeight,
+    height: canvasElement.clientHeight
   });
 };
 
 // zoom canvas on mouse scroll
 export const handleCanvasZoom = ({
   options,
-  canvas,
+  canvas
 }: {
   options: fabric.IEvent & { e: WheelEvent };
   canvas: fabric.Canvas;
