@@ -157,11 +157,12 @@ const Live = ({ canvasRef }: Props) => {
 
   return (
     <div
+      className="relative h-full w-full flex flex-row items-center justify-center flex-1"
+      id="canvas"
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      className="relative flex h-full w-full flex-1 items-center justify-center"
     >
       <canvas ref={canvasRef} />
       {reaction.map((reaction, index) => (

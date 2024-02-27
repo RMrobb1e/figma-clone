@@ -10,11 +10,13 @@ import {
   handleCanvasMouseMove,
   handleCanvasMouseUp,
   handleCanvasObjectModified,
+  handleCanvasObjectScaling,
+  handleCanvasSelectionCreated,
   handleResize,
   initializeFabric,
   renderCanvas
 } from "@/lib/canvas";
-import { ActiveElement } from "@/types/type";
+import { ActiveElement, Attributes } from "@/types/type";
 import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
 import { defaultNavElement } from "@/constants";
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
@@ -25,12 +27,30 @@ export const Page = () => {
   const redo = useRedo();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
-  const isDrawing = useRef(false);
   const shapeRef = useRef<fabric.Object | null>(null);
   const selectedShapeRef = useRef<string | null>(null);
   const activeObjectRef = useRef<fabric.Object | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const isDrawing = useRef(false);
+  const isEditingRef = useRef(false);
+
   const canvasObjects = useStorage((root) => root.canvasObjects);
+
+  const [activeElement, setActiveElement] = useState<ActiveElement>({
+    name: "",
+    value: "",
+    icon: ""
+  });
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
+    width: "",
+    height: "",
+    fontSize: "",
+    fontFamily: "",
+    fontWeight: "",
+    fill: "#aabbcc",
+    stroke: "#aabbcc"
+  });
+
   const syncShapeInStorage = useMutation(({ storage }, object) => {
     if (!object) return;
 
@@ -44,18 +64,12 @@ export const Page = () => {
     canvasObjects.set(objectId, shapeData);
   }, []);
 
-  const [activeElement, setActiveElement] = useState<ActiveElement>({
-    name: "",
-    value: "",
-    icon: ""
-  });
-
   const deleteAllShapes = useMutation(({ storage }) => {
     const canvasObjects = storage.get("canvasObjects");
 
     if (!canvasObjects || canvasObjects.size === 0) return;
 
-    for (const [key, value] of canvasObjects.entries()) {
+    for (const [key, _value] of canvasObjects.entries()) {
       canvasObjects.delete(key);
     }
 
@@ -73,7 +87,6 @@ export const Page = () => {
 
   const handleActiveElement = (element: ActiveElement) => {
     setActiveElement(element);
-    selectedShapeRef.current = element?.value as string;
 
     switch (element?.value) {
       case "reset":
@@ -126,13 +139,6 @@ export const Page = () => {
       });
     });
 
-    canvas.on("object:modified", (options: any) => {
-      handleCanvasObjectModified({
-        options,
-        syncShapeInStorage
-      });
-    });
-
     canvas.on("mouse:up", () => {
       handleCanvasMouseUp({
         canvas,
@@ -142,6 +148,28 @@ export const Page = () => {
         syncShapeInStorage,
         setActiveElement,
         activeObjectRef
+      });
+    });
+
+    canvas.on("object:modified", (options) => {
+      handleCanvasObjectModified({
+        options,
+        syncShapeInStorage
+      });
+    });
+
+    canvas.on("selection:created", (options) => {
+      handleCanvasSelectionCreated({
+        options,
+        isEditingRef,
+        setElementAttributes
+      });
+    });
+
+    canvas.on("object:scaling", (options) => {
+      handleCanvasObjectScaling({
+        options,
+        setElementAttributes
       });
     });
 
@@ -189,7 +217,14 @@ export const Page = () => {
       <section className="flex h-full flex-row">
         <LeftSidebar allShapes={Array.from(canvasObjects)} />
         <Live canvasRef={canvasRef} />
-        <RightSidebar />
+        <RightSidebar
+          elementAttributes={elementAttributes}
+          setElementAttributes={setElementAttributes}
+          fabricRef={fabricRef}
+          isEditingRef={isEditingRef}
+          activeObjectRef={activeObjectRef}
+          syncShapeInStorage={syncShapeInStorage}
+        />
       </section>
     </main>
   );
