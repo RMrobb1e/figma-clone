@@ -15,16 +15,18 @@ import {
   renderCanvas
 } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
-import { useMutation, useStorage } from "@/liveblocks.config";
+import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
 import { defaultNavElement } from "@/constants";
-import { handleDelete } from "@/lib/key-events";
+import { handleDelete, handleKeyDown } from "@/lib/key-events";
 
-export default function Page() {
+export const Page = () => {
+  const undo = useUndo();
+  const redo = useRedo();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const isDrawing = useRef(false);
   const shapeRef = useRef<fabric.Object | null>(null);
-  const selectedShapeRef = useRef<string | null>("rectangle");
+  const selectedShapeRef = useRef<string | null>(null);
   const activeObjectRef = useRef<fabric.Object | null>(null);
   const canvasObjects = useStorage((root) => root.canvasObjects);
   const syncShapeInStorage = useMutation(({ storage }, object) => {
@@ -91,7 +93,7 @@ export default function Page() {
   useEffect(() => {
     const canvas = initializeFabric({ canvasRef, fabricRef });
 
-    canvas.on("mouse:down", (options) => {
+    canvas.on("mouse:down", (options: any) => {
       handleCanvasMouseDown({
         options,
         canvas,
@@ -101,7 +103,7 @@ export default function Page() {
       });
     });
 
-    canvas.on("mouse:move", (options) => {
+    canvas.on("mouse:move", (options: any) => {
       handleCanvasMouseMove({
         options,
         canvas,
@@ -112,7 +114,7 @@ export default function Page() {
       });
     });
 
-    canvas.on("object:modified", (options) => {
+    canvas.on("object:modified", (options: any) => {
       handleCanvasObjectModified({
         options,
         syncShapeInStorage
@@ -135,6 +137,17 @@ export default function Page() {
       handleResize({ canvas: fabricRef.current });
     });
 
+    window.addEventListener("keydown", (e) => {
+      handleKeyDown({
+        e,
+        canvas: fabricRef.current,
+        undo,
+        redo,
+        syncShapeInStorage,
+        deleteShapeFromStorage
+      });
+    });
+
     return () => {
       canvas.dispose();
     };
@@ -151,10 +164,12 @@ export default function Page() {
         handleActiveElement={handleActiveElement}
       />
       <section className="flex h-full flex-row">
-        <LeftSidebar />
+        <LeftSidebar allShapes={Array.from(canvasObjects)} />
         <Live canvasRef={canvasRef} />
         <RightSidebar />
       </section>
     </main>
   );
-}
+};
+
+export default Page;
