@@ -1,8 +1,7 @@
 import {
   useBroadcastEvent,
   useEventListener,
-  useMyPresence,
-  useOthers
+  useMyPresence
 } from "@/liveblocks.config";
 import LiveCursors from "./cursor/LiveCursors";
 import { useCallback, useEffect, useState } from "react";
@@ -27,7 +26,6 @@ type Props = {
 };
 
 const Live = ({ canvasRef, undo, redo }: Props) => {
-  const others = useOthers();
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
 
   const [cursorState, setCursorState] = useState<CursorState>({
@@ -66,7 +64,7 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
   }, 100);
 
   useEventListener((eventData) => {
-    const event = eventData.event as ReactionEvent;
+    const event = eventData.event;
     setReaction((reactions) =>
       reactions.concat([
         {
@@ -230,7 +228,7 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
           <ReactionSelector setReaction={setReactions} />
         )}
 
-        <LiveCursors others={others} />
+        <LiveCursors />
 
         <Comments />
       </ContextMenuTrigger>
