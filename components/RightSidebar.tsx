@@ -16,10 +16,9 @@ const RightSidebar = ({
 }: RightSidebarProps) => {
   const handleInputChange = (property: string, value: string) => {
     // TODO: Fix this not working !!!
-    console.log(property, value);
     if (!isEditingRef.current) isEditingRef.current = true;
 
-    setElementAttributes((prev) => ({ ...prev, [property]: Number(value) }));
+    setElementAttributes((prev) => ({ ...prev, [property]: value }));
 
     modifyShape({
       canvas: fabricRef.current as fabric.Canvas,
@@ -42,8 +41,13 @@ const RightSidebar = ({
         height={elementAttributes.height}
         handleInputChange={handleInputChange}
       />
-      <Text />
-      <Color />
+
+      <Text
+        fontFamily={elementAttributes.fontFamily}
+        fontSize={elementAttributes.fontSize}
+        fontWeight={elementAttributes.fontWeight}
+        handleInputChange={handleInputChange}
+      />
       <Color />
       <Export />
     </section>
