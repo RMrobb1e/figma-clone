@@ -19,7 +19,6 @@ const Dimensions = ({
   isEditingRef,
   handleInputChange
 }: Props) => {
-  console.log(width, height);
   return (
     <section className="flex flex-col border-b border-primary-grey-200">
       <div className="flex flex-col gap-4 px-6 py-3">

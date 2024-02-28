@@ -4,7 +4,7 @@ type Props = {
   setReaction: (reaction: string) => void;
 };
 
-export default function ReactionSelector({ setReaction }: Props) {
+const ReactionSelector = ({ setReaction }: Props) => {
   return (
     <div
       className="absolute bottom-20 left-0 right-0 mx-auto w-fit transform rounded-full bg-white px-2"
@@ -18,15 +18,15 @@ export default function ReactionSelector({ setReaction }: Props) {
       <ReactionButton reaction="🙁" onSelect={setReaction} />
     </div>
   );
-}
+};
 
-function ReactionButton({
+const ReactionButton = ({
   reaction,
   onSelect
 }: {
   reaction: string;
   onSelect: (reaction: string) => void;
-}) {
+}) => {
   return (
     <button
       className="transform select-none p-2 text-xl transition-transform hover:scale-150 focus:scale-150 focus:outline-none"
@@ -35,4 +35,6 @@ function ReactionButton({
       {reaction}
     </button>
   );
-}
+};
+
+export default ReactionSelector;

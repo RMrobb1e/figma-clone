@@ -7,7 +7,7 @@ type Props = {
   value: string;
 };
 
-export default function FlyingReaction({ x, y, timestamp, value }: Props) {
+const FlyingReaction = ({ x, y, timestamp, value }: Props) => {
   return (
     <div
       className={`pointer-events-none absolute select-none ${
@@ -22,4 +22,6 @@ export default function FlyingReaction({ x, y, timestamp, value }: Props) {
       </div>
     </div>
   );
-}
+};
+
+export default FlyingReaction;

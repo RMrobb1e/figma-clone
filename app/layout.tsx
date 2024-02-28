@@ -15,11 +15,11 @@ export const metadata: Metadata = {
     "A minimalist Figma clone using Fabric.js and Liveblocks for real-time collaboration."
 };
 
-export default function RootLayout({
+const RootLayout = ({
   children
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <html lang="en">
       <body className={`${workSans.className} bg-primary-grey-200`}>
@@ -27,4 +27,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
